@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0a0e16" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+<title>hairchair — an intelligent ecosystem for professional haircare</title>
+
+<meta name="description" content="HairChair is building a robotic mechatronics and software ecosystem for professional salons. Patent-pending. In stealth build through Summer 2026." />
+<meta name="author" content="Eva-Jessy Guech" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="hairchair — an intelligent ecosystem for professional haircare" />
+<meta property="og:description" content="A robotic chair, an embedded 7-DOF arm, a spatially-indexed scalp Weather Map, and HairChair OS. Patent-pending. Summer 2026 build sprint underway." />
+<meta property="og:url" content="https://hairchairos.com" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://hairchairos.com/assets/og-cover.jpg" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+/* ==========================================================
+   BRAND TOKENS
+   ========================================================== */
+:root {
+  /* Base palette */
+  --ink-deep: #0a0e16;        /* near-black navy, primary background */
+  --ink-raised: #111827;      /* card surfaces */
+  --ink-rule: #1f2937;        /* hairline borders */
+
+  /* Text */
+  --bone: #f4eee2;            /* warm off-white, primary text */
+  --bone-dim: #c9c2b3;        /* secondary text */
+  --bone-faint: #8c8678;      /* metadata, labels */
+
+  /* Accents */
+  --copper: #d0876a;          /* the chair shell — heat / hardware */
+  --copper-glow: #e2a487;     /* lighter copper for hover */
+  --emerald: #4ade80;         /* the OS signature — software / live */
+  --emerald-dim: #16a34a;     /* in-progress markers */
+  --signal-blue: #60a5fa;     /* future / queued state */
+
+  /* Typography */
+  --display: 'Fraunces', 'Cormorant Garamond', 'Times New Roman', serif;
+  --body: 'Manrope', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Rhythm */
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --max-w: 1180px;
+}
+
+/* ==========================================================
+   RESET & BASE
+   ========================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--bone);
+  background: var(--ink-deep);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(208, 135, 106, 0.08), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 110%, rgba(74, 222, 128, 0.05), transparent 60%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Subtle film grain over everything */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* ==========================================================
+   LAYOUT PRIMITIVES
+   ========================================================== */
+.shell {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+  position: relative;
+  z-index: 2;
+}
+
+section { padding: clamp(4rem, 9vw, 7rem) 0; }
+
+/* ==========================================================
+   TOP RULE / NAV
+   ========================================================== */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: rgba(10, 14, 22, 0.72);
+  border-bottom: 1px solid var(--ink-rule);
+}
+
+.top-bar .shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.1rem;
+  padding-bottom: 1.1rem;
+}
+
+.brand-mark {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+  color: var(--bone);
+}
+.brand-mark .os {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 0.7em;
+  font-weight: 500;
+  color: var(--emerald);
+  padding-left: 0.15em;
+  letter-spacing: 0.05em;
+}
+
+.nav-meta {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  white-space: nowrap;
+}
+.nav-meta .long { display: none; }
+@media (min-width: 560px) {
+  .nav-meta .short { display: none; }
+  .nav-meta .long  { display: inline; }
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--copper);
+  box-shadow: 0 0 0 0 var(--copper);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(208, 135, 106, 0.6); }
+  50%      { box-shadow: 0 0 0 7px rgba(208, 135, 106, 0); }
+}
+
+/* ==========================================================
+   HERO
+   ========================================================== */
+.hero { padding-top: clamp(5rem, 12vw, 9rem); padding-bottom: clamp(4rem, 8vw, 7rem); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--copper);
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+.wordmark {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(4.5rem, 13vw, 9.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--bone);
+  margin-bottom: 0.4em;
+}
+.wordmark .os-tail {
+  font-family: var(--mono);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.32em;
+  color: var(--emerald);
+  vertical-align: 0.95em;
+  letter-spacing: 0.04em;
+  margin-left: 0.05em;
+}
+
+.hero-tag {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(1.4rem, 2.7vw, 2rem);
+  line-height: 1.35;
+  max-width: 36ch;
+  color: var(--bone-dim);
+  margin-bottom: 2.2rem;
+}
+.hero-tag em {
+  font-style: italic;
+  color: var(--bone);
+  font-weight: 400;
+}
+
+.hero-attrib {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--bone-faint);
+  text-transform: uppercase;
+}
+
+/* Decorative hairline rule under hero */
+.hairline {
+  height: 1px;
+  background: linear-gradient(to right, var(--ink-rule), var(--copper) 30%, var(--emerald) 60%, var(--ink-rule));
+  margin-top: 4rem;
+  opacity: 0.55;
+}
+
+/* ==========================================================
+   SECTION HEADERS
+   ========================================================== */
+.section-tag {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1rem;
+  margin-bottom: 2.5rem;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+.section-tag::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--copper);
+}
+.section-tag .num { color: var(--copper); }
+
+h2.section-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--bone);
+  max-width: 22ch;
+  margin-bottom: 1.5rem;
+}
+h2.section-title em {
+  font-style: italic;
+  color: var(--copper);
+}
+
+.section-lead {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+  line-height: 1.55;
+  color: var(--bone-dim);
+  max-width: 56ch;
+}
+
+/* ==========================================================
+   MANIFESTO
+   ========================================================== */
+.manifesto {
+  border-top: 1px solid var(--ink-rule);
+  border-bottom: 1px solid var(--ink-rule);
+}
+
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+@media (min-width: 880px) {
+  .manifesto-grid { grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start; }
+}
+
+.manifesto p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--bone-dim);
+}
+.manifesto p + p { margin-top: 1.2rem; }
+.manifesto strong { color: var(--bone); font-weight: 500; }
+
+/* ==========================================================
+   PILLARS (Hardware / Software / Database)
+   ========================================================== */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+@media (min-width: 720px) { .pillars-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.pillar {
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-rule);
+  padding: 2rem 1.75rem;
+  position: relative;
+  transition: transform 0.4s ease, border-color 0.4s ease;
+}
+.pillar:hover { transform: translateY(-3px); border-color: var(--copper); }
+
+.pillar-tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.pillar:nth-child(2) .pillar-tag { color: var(--emerald); }
+.pillar:nth-child(3) .pillar-tag { color: var(--signal-blue); }
+
+.pillar h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.75rem;
+  letter-spacing: -0.015em;
+  color: var(--bone);
+  margin-bottom: 1rem;
+  line-height: 1.15;
+}
+
+.pillar p {
+  font-size: 0.96rem;
+  line-height: 1.6;
+  color: var(--bone-dim);
+}
+
+.pillar ul {
+  list-style: none;
+  margin-top: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--bone-faint);
+}
+.pillar ul li {
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--ink-rule);
+  letter-spacing: 0.04em;
+}
+.pillar ul li:first-child { border-top: none; padding-top: 0; }
+
+/* ==========================================================
+   MOAT
+   ========================================================== */
+.moat {
+  background: linear-gradient(180deg, transparent, rgba(208, 135, 106, 0.04));
+  border-top: 1px solid var(--ink-rule);
+}
+
+.moat-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+@media (min-width: 880px) { .moat-grid { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+
+.moat-points {
+  list-style: none;
+  display: grid;
+  gap: 1.5rem;
+}
+.moat-points li {
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--bone-dim);
+}
+.moat-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 8px;
+  height: 1px;
+  background: var(--copper);
+}
+.moat-points strong { color: var(--bone); font-weight: 500; }
+
+/* ==========================================================
+   BUILD TIMELINE
+   ========================================================== */
+.phases {
+  margin-top: 3rem;
+  border-top: 1px solid var(--ink-rule);
+}
+
+.now-shipping {
+  margin-top: 3rem;
+  padding: 1.75rem 1.75rem;
+  background: linear-gradient(135deg, rgba(208, 135, 106, 0.08), rgba(208, 135, 106, 0.02));
+  border: 1px solid rgba(208, 135, 106, 0.35);
+  border-left: 3px solid var(--copper);
+  position: relative;
+}
+.now-shipping-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.now-shipping-label::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--copper);
+  box-shadow: 0 0 10px var(--copper);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+.now-shipping p {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--bone);
+  margin: 0;
+}
+.now-shipping p em { font-style: italic; color: var(--copper); }
+
+.phase {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--ink-rule);
+  position: relative;
+}
+@media (min-width: 760px) {
+  .phase {
+    grid-template-columns: 130px 110px 1fr 130px;
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
+.phase-num {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 2.2rem;
+  color: var(--copper);
+  line-height: 1;
+}
+
+.phase-dates {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  color: var(--bone-faint);
+  text-transform: uppercase;
+  padding-top: 0.55rem;
+}
+
+.phase-body { padding-top: 0.35rem; }
+
+.phase-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.35rem;
+  color: var(--bone);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.phase-desc {
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--bone-dim);
+}
+
+.phase-status {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.phase-status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-done .dot     { background: var(--emerald-dim); }
+.status-done          { color: var(--emerald-dim); }
+.status-active .dot   { background: var(--copper); box-shadow: 0 0 12px var(--copper); }
+.status-active        { color: var(--copper); }
+.status-queued .dot   { background: var(--ink-rule); border: 1px solid var(--bone-faint); }
+.status-queued        { color: var(--bone-faint); }
+
+/* ==========================================================
+   FOUNDER NOTE
+   ========================================================== */
+.founder {
+  border-top: 1px solid var(--ink-rule);
+  border-bottom: 1px solid var(--ink-rule);
+}
+
+.founder-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+@media (min-width: 880px) {
+  .founder-grid { grid-template-columns: 0.7fr 1fr; gap: 4rem; align-items: start; }
+}
+
+.founder-photo-frame {
+  aspect-ratio: 4 / 5;
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-rule);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.founder-photo-frame::before {
+  content: 'EJG';
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 4rem;
+  color: var(--copper);
+  opacity: 0.35;
+}
+.founder-photo-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.founder-quote {
+  font-family: var(--display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  line-height: 1.4;
+  color: var(--bone);
+  margin-bottom: 2rem;
+  letter-spacing: -0.01em;
+}
+
+.founder-bio {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--bone-dim);
+  margin-bottom: 1.5rem;
+}
+
+.founder-sig {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--copper);
+  margin-top: 1.5rem;
+}
+.founder-role {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  margin-top: 0.3rem;
+}
+
+/* ==========================================================
+   RECOGNITION
+   ========================================================== */
+.recognition-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+@media (min-width: 720px) { .recognition-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.recog-card {
+  border: 1px solid var(--ink-rule);
+  padding: 1.5rem 1.25rem;
+  background: var(--ink-raised);
+}
+.recog-where {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  margin-bottom: 0.85rem;
+}
+.recog-prize {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--bone);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+}
+.recog-detail {
+  font-size: 0.88rem;
+  color: var(--bone-dim);
+  line-height: 1.5;
+}
+
+/* ==========================================================
+   CONTACT
+   ========================================================== */
+.contact {
+  text-align: center;
+  border-top: 1px solid var(--ink-rule);
+  padding: clamp(5rem, 9vw, 8rem) 0;
+}
+
+.contact-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 1.5rem;
+}
+
+.contact h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  letter-spacing: -0.025em;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  color: var(--bone);
+}
+
+.contact p {
+  font-size: 1.05rem;
+  color: var(--bone-dim);
+  max-width: 48ch;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  letter-spacing: 0.05em;
+  color: var(--bone);
+  padding: 1.15rem 2rem;
+  border: 1px solid var(--copper);
+  background: transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--copper);
+  transform: translateY(100%);
+  transition: transform 0.4s ease;
+  z-index: -1;
+}
+.cta:hover { color: var(--ink-deep); }
+.cta:hover::before { transform: translateY(0); }
+.cta .arrow { transition: transform 0.3s ease; }
+.cta:hover .arrow { transform: translateX(4px); }
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+footer {
+  border-top: 1px solid var(--ink-rule);
+  padding: 2.5rem 0 3rem;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: var(--bone-faint);
+}
+.footer-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+@media (min-width: 720px) {
+  .footer-row { flex-direction: row; justify-content: space-between; align-items: center; }
+}
+.footer-row a:hover { color: var(--copper); }
+
+.disclaimer {
+  max-width: 60ch;
+  font-size: 0.7rem;
+  line-height: 1.6;
+  color: var(--bone-faint);
+  opacity: 0.7;
+  margin-top: 1.5rem;
+}
+
+/* ==========================================================
+   ENTRANCE ANIMATION (one orchestrated reveal)
+   ========================================================== */
+.reveal { opacity: 0; transform: translateY(14px); animation: rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.r1 { animation-delay: 0.05s; }
+.r2 { animation-delay: 0.2s; }
+.r3 { animation-delay: 0.35s; }
+.r4 { animation-delay: 0.55s; }
+.r5 { animation-delay: 0.75s; }
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     TOP BAR
+     ============================================================ -->
+<header class="top-bar">
+  <div class="shell">
+    <a href="#" class="brand-mark">hairchair<span class="os">/OS</span></a>
+    <div class="nav-meta">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="short">Stealth</span>
+      <span class="long">Stealth &middot; Summer Sprint 2026</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero">
+  <div class="shell">
+    <span class="eyebrow reveal r1">// Patent-pending · Cleveland, OH</span>
+    <h1 class="wordmark reveal r2">hairchair<span class="os-tail">/OS</span></h1>
+    <p class="hero-tag reveal r3">
+      The next evolution of haircare isn&rsquo;t a new product.<br />
+      It is an <em>intelligent ecosystem.</em>
+    </p>
+    <div class="hero-attrib reveal r4">— Eva-Jessy Guech, Founder &amp; Systems Architect</div>
+    <div class="hairline reveal r5"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MANIFESTO
+     ============================================================ -->
+<section class="manifesto" id="vision">
+  <div class="shell">
+    <div class="manifesto-grid">
+      <div>
+        <div class="section-tag"><span class="num">01</span><span>The Premise</span></div>
+        <h2 class="section-title">A workstation that <em>thinks</em>.</h2>
+      </div>
+      <div>
+        <p>
+          Professional salons run on craft, repetition, and physical strain. Stylists hold their arms above their shoulders for six hours at a time. Clients with textured, coily, or non-standardized hair are routinely under-served by tools and AI trained on European hair textures. Salon owners manage twelve software systems and zero of them talk to each other.
+        </p>
+        <p>
+          <strong>HairChair is a robotic mechatronics platform engineered as one integrated salon workstation</strong> — chassis, embedded 7-DOF arm, hot-swappable end-effectors, spatially-indexed scalp analysis, and a role-based software layer built for the entire salon team.
+        </p>
+        <p>
+          We are not adding a feature to the chair. We are redefining what the chair <em>is.</em>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     THREE PILLARS
+     ============================================================ -->
+<section id="ecosystem">
+  <div class="shell">
+    <div class="section-tag"><span class="num">02</span><span>The Architecture</span></div>
+    <h2 class="section-title">Three systems. <em>One ecosystem.</em></h2>
+    <p class="section-lead">Each layer ships with the chair. Each layer also stands alone as a separate commercial surface.</p>
+
+    <div class="pillars-grid">
+
+      <div class="pillar">
+        <span class="pillar-tag">// Hardware</span>
+        <h3>The Workstation</h3>
+        <p>
+          A purpose-built salon chair with an embedded 7-DOF cobotic arm, omnidirectional mecanum drive, and a Universal Hot-Swappable Interface for interchangeable end-effectors — Smart Comb, product dispenser, hair-tool gripper, braiding cell.
+        </p>
+        <ul>
+          <li>· ISO/TS 15066 force-limit compliant</li>
+          <li>· Biometric Reflex Protocol (3 layers)</li>
+          <li>· Wheelchair-docking accessibility port</li>
+          <li>· DIN-rail compute, swap-in SOM ready</li>
+        </ul>
+      </div>
+
+      <div class="pillar">
+        <span class="pillar-tag">// Software</span>
+        <h3>HairChair OS</h3>
+        <p>
+          A role-based platform spanning Clinical AI, Client, Stylist, Salon Owner, and Dev/Admin. Fleet telemetry, block-programming for custom procedures, embedded social layer for the salon community, and an RAG engine tuned on professional cosmetology literature.
+        </p>
+        <ul>
+          <li>· Five authenticated role dashboards</li>
+          <li>· Real-time fleet &amp; chair-state telemetry</li>
+          <li>· Block-programming for styling procedures</li>
+          <li>· Vector-indexed knowledge base</li>
+        </ul>
+      </div>
+
+      <div class="pillar">
+        <span class="pillar-tag">// Database</span>
+        <h3>The Weather Map</h3>
+        <p>
+          A spatially-indexed topographical model of scalp characteristics — porosity, hydration awareness, follicular density estimation — rendered as color-coded zones that guide product application and styling toolpaths. Built explicitly to honor textured-hair morphology.
+        </p>
+        <ul>
+          <li>· 50&times;50 zone scalp resolution</li>
+          <li>· Depth + microscopic optical pipeline</li>
+          <li>· LeRobot dataset-formatted episodes</li>
+          <li>· Tuned for non-standardized hair types</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     THE MOAT
+     ============================================================ -->
+<section class="moat" id="moat">
+  <div class="shell">
+    <div class="moat-grid">
+      <div>
+        <div class="section-tag"><span class="num">03</span><span>The Moat</span></div>
+        <h2 class="section-title">Engineered for the <em>hardest</em> environment.</h2>
+        <p class="section-lead">A working salon is chaotic, high-motion, multi-actor, and physically intimate. Most cobotics frameworks fail here on day one. We build for it directly.</p>
+      </div>
+
+      <ul class="moat-points">
+        <li><strong>Advanced HRI for chaotic workspaces.</strong> Multi-client, multi-stylist environments with overlapping physical activity — certified force tolerance and a layered Biometric Reflex Protocol.</li>
+        <li><strong>Vision calibrated for textured hair.</strong> Most computer-vision pipelines silently underperform on coily and non-standardized hair. Ours is trained on it from the first dataset.</li>
+        <li><strong>AI as a colleague, not a replacement.</strong> The stylist directs every procedure. The system protects, augments, and documents. Adoption follows trust.</li>
+        <li><strong>Enterprise-ready from first design.</strong> No prototype-to-manufacturing redesign. Only material or color changes are permitted at the transition.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     THE BUILD — PHASE TIMELINE (live, updated as phases ship)
+     ============================================================ -->
+<section id="build">
+  <div class="shell">
+    <div class="section-tag"><span class="num">04</span><span>The Build · Summer 2026</span></div>
+    <h2 class="section-title">The sprint, <em>in public.</em></h2>
+    <p class="section-lead">Fifteen weeks. Seven phases. A working physical prototype with a real-world demo at the end. Updated as gates clear.</p>
+
+    <!-- NOW SHIPPING — update this weekly with what's actively being worked on -->
+    <div class="now-shipping">
+      <span class="now-shipping-label">Now Shipping &middot; Week 1 of Phase 1</span>
+      <p>
+        Provisioning <em>Lambda Labs RTX 6000</em> for Isaac Sim. Importing the arm URDF and converting to USD. Bringing up the <em>ROS 2 &harr; Isaac Sim</em> bridge so joint trajectories command the simulated arm. Building the salon environment in OpenUSD via Python.
+      </p>
+    </div>
+
+    <div class="phases">
+
+      <article class="phase">
+        <div class="phase-num">00</div>
+        <div class="phase-dates">May 7 – May 14</div>
+        <div class="phase-body">
+          <h3 class="phase-title">Foundations</h3>
+          <p class="phase-desc">Regulatory extractions complete &mdash; wellness positioning locked under FDA 2019 General Wellness guidance. Four requirement documents drafted. CWRU IP correspondence sent. ROS 2 + SROS2 environment online with a keystore for every node enclave. Claude Code workflow and the five HairChair custom skills installed.</p>
+        </div>
+        <div class="phase-status status-done"><span class="dot"></span>Complete</div>
+      </article>
+
+      <article class="phase">
+        <div class="phase-num">01</div>
+        <div class="phase-dates">May 15 – Jun 7</div>
+        <div class="phase-body">
+          <h3 class="phase-title">Simulation Sprint</h3>
+          <p class="phase-desc">Three weeks inside NVIDIA Isaac Sim. <strong>Week 1:</strong> arm URDF imported, salon environment built in OpenUSD, ROS 2 &rlarr; Isaac Sim bridge live. <strong>Week 2:</strong> OmniHair 4C physics tuned on a mannequin head, parameter-control Kit extension, Hair Preset Library begun (4C, 4B, 4A, 3C). <strong>Week 3:</strong> Smart Comb USD attached to arm TCP, hair-selection and comb-interaction Kit extensions, first force-logged comb passes.</p>
+        </div>
+        <div class="phase-status status-active"><span class="dot"></span>In Progress</div>
+      </article>
+
+      <article class="phase">
+        <div class="phase-num">02</div>
+        <div class="phase-dates">Jun 8 – Jun 21</div>
+        <div class="phase-body">
+          <h3 class="phase-title">Safety &amp; Force Curriculum</h3>
+          <p class="phase-desc">All three Biometric Reflex Protocol layers running in simulation. Reinforcement-learning reward function for force-respecting motion. Hair Preset Library covering full curl-type spectrum (1A through 4C).</p>
+        </div>
+        <div class="phase-status status-queued"><span class="dot"></span>Queued</div>
+      </article>
+
+      <article class="phase">
+        <div class="phase-num">03</div>
+        <div class="phase-dates">Jun 22 – Jul 5</div>
+        <div class="phase-body">
+          <h3 class="phase-title">Weather Map &amp; OS Foundation</h3>
+          <p class="phase-desc">Diagnostic pipeline publishing real-time scalp data from physical sensors. Browser-rendered Weather Map. Supabase + RAG engine rebuilt on clean architecture. Role-based authentication and dashboard scaffolding.</p>
+        </div>
+        <div class="phase-status status-queued"><span class="dot"></span>Queued</div>
+      </article>
+
+      <article class="phase">
+        <div class="phase-num">04</div>
+        <div class="phase-dates">Jul 6 – Jul 19</div>
+        <div class="phase-body">
+          <h3 class="phase-title">Custom Silicon</h3>
+          <p class="phase-desc">Smart Comb integrated PCB and Power Distribution PCB designed in KiCad, manufactured via JLCPCB. FreeCAD parametric mechanical parts. All designs pass /ultra-review gate before order.</p>
+        </div>
+        <div class="phase-status status-queued"><span class="dot"></span>Queued</div>
+      </article>
+
+      <article class="phase">
+        <div class="phase-num">05</div>
+        <div class="phase-dates">Jul 20 – Aug 3</div>
+        <div class="phase-body">
+          <h3 class="phase-title">Physical Integration</h3>
+          <p class="phase-desc">Hardware fabrication. PCBs assembled and bench-tested. Smart Comb end-effector attached to arm via Universal Interface. First closed-loop motion controlled by ROS 2 on the Jetson.</p>
+        </div>
+        <div class="phase-status status-queued"><span class="dot"></span>Queued</div>
+      </article>
+
+      <article class="phase">
+        <div class="phase-num">06</div>
+        <div class="phase-dates">Aug 4 – Aug 20</div>
+        <div class="phase-body">
+          <h3 class="phase-title">Demo &amp; Next Capital</h3>
+          <p class="phase-desc">Mannequin testing. Stylist interviews. Recorded end-to-end demo. SBIR Phase I draft. Phase 1 MVP ready for institutional capital and accelerator placement.</p>
+        </div>
+        <div class="phase-status status-queued"><span class="dot"></span>Queued</div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOUNDER NOTE
+     ============================================================ -->
+<section class="founder">
+  <div class="shell">
+    <div class="founder-grid">
+      <div class="founder-photo-frame">
+        <!-- Drop a square portrait at /assets/founder.jpg to replace the EJG monogram fallback -->
+        <!-- <img src="/assets/founder.jpg" alt="Eva-Jessy Guech, founder" /> -->
+      </div>
+      <div>
+        <div class="section-tag"><span class="num">05</span><span>From the Founder</span></div>
+        <p class="founder-quote">
+          &ldquo;I am not building a product. I am building infrastructure for a craft I love — and for the practitioners and clients the existing industry quietly leaves behind.&rdquo;
+        </p>
+        <p class="founder-bio">
+          Eva-Jessy Guech is the sole inventor on the HairChair patent and the solo founder leading every layer of the build &mdash; mechanical, electrical, embedded, simulation, software, and regulatory. Master&rsquo;s candidate in Computer Science at Case Western Reserve University, concentration in AI with a focus on human-robot and human-computer interaction. Her thesis is derived from HairChair research.
+        </p>
+        <div class="founder-sig">Eva-Jessy</div>
+        <div class="founder-role">Founder &amp; Lead Systems Architect</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     RECOGNITION
+     ============================================================ -->
+<section id="recognition">
+  <div class="shell">
+    <div class="section-tag"><span class="num">06</span><span>Recognition</span></div>
+    <h2 class="section-title">Early <em>validation.</em></h2>
+
+    <div class="recognition-grid">
+      <div class="recog-card">
+        <div class="recog-where">Sears think[box]</div>
+        <div class="recog-prize">1st &middot; Alumni Choice</div>
+        <div class="recog-detail">Spring 2026 Showcase. Non-dilutive capital toward simulation infrastructure and the Phase 1 prototype.</div>
+      </div>
+      <div class="recog-card">
+        <div class="recog-where">CWRU Veale Institute</div>
+        <div class="recog-prize">3rd Place</div>
+        <div class="recog-detail">Veale Snyder Fellowship cohort. Recognized for ecosystem architecture and clear path to commercialization.</div>
+      </div>
+      <div class="recog-card">
+        <div class="recog-where">Patent Status</div>
+        <div class="recog-prize">Non-Provisional Filed</div>
+        <div class="recog-detail">Sole inventor. Currently in examination queue with a planned continuation-in-part for chair-product refinements.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<section class="contact" id="contact">
+  <div class="shell">
+    <div class="contact-eyebrow">// Selective Outreach</div>
+    <h2>Stay in the loop.</h2>
+    <p>
+      We are currently focused on the build. We do reply to thoughtful notes from investors, mission-aligned operators, salon professionals, and engineers who&rsquo;d like to follow what we&rsquo;re building.
+    </p>
+    <a class="cta" href="mailto:founder@hairchairos.com?subject=hairchair%2FOS%20%E2%80%94%20intro">
+      founder@hairchairos.com
+      <span class="arrow">&rarr;</span>
+    </a>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <div class="shell">
+    <div class="footer-row">
+      <div>&copy; 2026 HairChair. All rights reserved.</div>
+      <div>
+        <a href="mailto:founder@hairchairos.com">contact</a> &nbsp;·&nbsp;
+        <a href="#build">build log</a> &nbsp;·&nbsp;
+        <a href="https://www.linkedin.com/in/eva-jessy-guech" target="_blank" rel="noopener">linkedin</a>
+      </div>
+    </div>
+    <p class="disclaimer">
+      HairChair is a general wellness platform supporting professional hair care and salon operations. It is not a medical device. The system does not diagnose, treat, cure, or prevent any disease. Patent-pending. Trademarks of HairChair pending registration. Cleveland, Ohio, USA.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
