@@ -401,6 +401,22 @@ h2.section-title em {
 }
 .pillar ul li:first-child { border-top: none; padding-top: 0; }
 
+/* Screenshot dropped inside a pillar card, with a small italic caption */
+.pillar-shot {
+  width: 100%;
+  margin-top: 1.5rem;
+  border: 1px solid var(--ink-rule);
+  border-radius: 3px;
+  background: var(--ink-deep);
+}
+.pillar-caption {
+  margin-top: 0.65rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--bone-faint);
+}
+
 /* ==========================================================
    MOAT
    ========================================================== */
@@ -897,6 +913,13 @@ footer {
           <li>· Block-programming for styling procedures</li>
           <li>· Vector-indexed knowledge base</li>
         </ul>
+        <!-- OS role-select screenshot. Below the fold, so loading="lazy". -->
+        <img
+          class="pillar-shot"
+          src="assets/os_role_select.png"
+          loading="lazy"
+          alt="HairChair OS role-select screen presenting five authenticated roles: Clinical AI, Client, Stylist, Salon Owner, and Dev/Admin." />
+        <p class="pillar-caption">HairChair OS role-select. Clinical AI &middot; Client &middot; Stylist &middot; Salon Owner &middot; Dev/Admin.</p>
       </div>
 
       <div class="pillar">
