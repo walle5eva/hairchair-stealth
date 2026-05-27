@@ -418,6 +418,53 @@ h2.section-title em {
 }
 
 /* ==========================================================
+   VIDEO EMBEDS (Live demonstrations + Founder)
+   ========================================================== */
+.video-grid {
+  display: grid;
+  grid-template-columns: 1fr;          /* mobile: stacked */
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+@media (min-width: 760px) {
+  .video-grid { grid-template-columns: 1fr 1fr; }  /* desktop: side-by-side */
+}
+
+.video-embed {
+  border: 1px solid var(--ink-rule);
+  background: var(--ink-raised);
+}
+
+/* Intrinsic 16:9 wrapper so the iframe scales fluidly without JS */
+.video-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+.video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-caption {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  color: var(--bone-dim);
+  padding: 0.9rem 1rem;
+}
+
+/* Founder explainer is a single, narrower, centered embed */
+.video-solo {
+  max-width: 640px;
+  margin: 2.5rem auto 0;
+}
+
+/* ==========================================================
    MOAT
    ========================================================== */
 .moat {
@@ -941,13 +988,52 @@ footer {
 </section>
 
 <!-- ============================================================
+     LIVE DEMONSTRATIONS
+     ============================================================ -->
+<section id="demonstrations">
+  <div class="shell">
+    <!-- Numbered section header kept consistent with siblings; the "//" in the
+         brief's title is reserved by BRAND_VOICE for in-card sub-sections, so the
+         numbered tag carries the label only. -->
+    <div class="section-tag"><span class="num">03</span><span>Live demonstrations</span></div>
+    <p class="section-lead">Working software, recorded as it runs. Captioned walkthroughs forthcoming.</p>
+
+    <div class="video-grid">
+      <!-- youtube-nocookie embeds, lazy-loaded, with descriptive iframe titles -->
+      <div class="video-embed">
+        <div class="video-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/9wNFvJyATw0"
+            title="HairChair OS — five-role platform walkthrough"
+            loading="lazy"
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
+        <p class="video-caption">HairChair OS — five-role platform walkthrough</p>
+      </div>
+      <div class="video-embed">
+        <div class="video-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/XKKMUewsQbs"
+            title="RAG engine — cited responses over professional cosmetology literature"
+            loading="lazy"
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
+        <p class="video-caption">RAG engine — cited responses over professional cosmetology literature</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      THE MOAT
      ============================================================ -->
 <section class="moat" id="moat">
   <div class="shell">
     <div class="moat-grid">
       <div>
-        <div class="section-tag"><span class="num">03</span><span>The Moat</span></div>
+        <div class="section-tag"><span class="num">04</span><span>The Moat</span></div>
         <h2 class="section-title">Engineered for the <em>hardest</em> environment.</h2>
         <p class="section-lead">A working salon is chaotic, high-motion, multi-actor, and physically intimate. Most cobotics frameworks fail here on day one. We build for it directly.</p>
       </div>
@@ -967,7 +1053,7 @@ footer {
      ============================================================ -->
 <section id="build">
   <div class="shell">
-    <div class="section-tag"><span class="num">04</span><span>The Build · Summer 2026</span></div>
+    <div class="section-tag"><span class="num">05</span><span>The Build · Summer 2026</span></div>
     <h2 class="section-title">The sprint, <em>in public.</em></h2>
     <p class="section-lead">Fifteen weeks. Seven phases. A working physical prototype with a real-world demo at the end. Updated as gates clear.</p>
 
@@ -1066,7 +1152,7 @@ footer {
         <!-- <img src="/assets/founder.jpg" alt="Eva-Jessy Guech, founder" /> -->
       </div>
       <div>
-        <div class="section-tag"><span class="num">05</span><span>From the Founder</span></div>
+        <div class="section-tag"><span class="num">06</span><span>From the Founder</span></div>
         <p class="founder-quote">
           &ldquo;I am not building a product. I am building infrastructure for a craft I love — and for the practitioners and clients the existing industry quietly leaves behind.&rdquo;
         </p>
@@ -1085,7 +1171,7 @@ footer {
      ============================================================ -->
 <section id="recognition">
   <div class="shell">
-    <div class="section-tag"><span class="num">06</span><span>Recognition</span></div>
+    <div class="section-tag"><span class="num">07</span><span>Recognition</span></div>
     <h2 class="section-title">Early <em>validation.</em></h2>
 
     <div class="recognition-grid">
