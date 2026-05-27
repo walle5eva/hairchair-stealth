@@ -806,6 +806,85 @@ h2.section-title em {
 .cta:hover .arrow { transform: translateX(4px); }
 
 /* ==========================================================
+   WAITLIST FORM
+   ========================================================== */
+.waitlist {
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: left;        /* override the centered contact column */
+  display: grid;
+  gap: 1.1rem;
+}
+.field { display: grid; gap: 0.4rem; }
+.field label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+.field .opt { text-transform: none; letter-spacing: 0; opacity: 0.7; }
+
+.waitlist input,
+.waitlist select,
+.waitlist textarea {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  color: var(--bone);
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-rule);
+  border-radius: 3px;
+  padding: 0.7rem 0.85rem;
+  width: 100%;
+}
+.waitlist textarea { resize: vertical; }
+.waitlist input:focus,
+.waitlist select:focus,
+.waitlist textarea:focus {
+  outline: none;
+  border-color: var(--copper);
+}
+.waitlist .cta { justify-content: center; cursor: pointer; margin-top: 0.4rem; }
+
+/* Honeypot: positioned off-screen (not display:none, which some bots skip).
+   Hidden from humans and assistive tech; bots fill it and get rejected. */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact .form-msg {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 1.2em;
+}
+.contact .form-msg.error { color: var(--copper-glow); }
+.contact .form-msg.ok    { color: var(--emerald); }
+
+.contact .form-alt {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--bone-faint);
+  margin: 1.6rem auto 0;
+}
+.contact .form-alt a { color: var(--copper); }
+.contact .form-alt a:hover { color: var(--copper-glow); }
+
+.contact .thanks {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--emerald);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ==========================================================
    FOOTER
    ========================================================== */
 footer {
@@ -1217,10 +1296,54 @@ footer {
     <p>
       We are currently focused on the build. We do reply to thoughtful notes from investors, mission-aligned operators, salon professionals, and engineers who&rsquo;d like to follow what we&rsquo;re building.
     </p>
-    <a class="cta" href="mailto:founder@hairchairos.com?subject=hairchair%2FOS%20%E2%80%94%20intro">
-      founder@hairchairos.com
-      <span class="arrow">&rarr;</span>
-    </a>
+    <!-- Waitlist form. Vanilla JS submission to Supabase REST (see script at end
+         of body). Honeypot + 30s localStorage rate limit are friction, not security. -->
+    <form id="waitlist-form" class="waitlist" novalidate>
+      <div class="field">
+        <label for="wl-email">Email</label>
+        <input id="wl-email" name="email" type="email" required
+               autocomplete="email" placeholder="you@example.com"
+               pattern="[^@\s]+@[^@\s]+\.[^@\s]+" />
+      </div>
+      <div class="field">
+        <label for="wl-role">I am a</label>
+        <select id="wl-role" name="role" required>
+          <option value="" disabled selected>Select one</option>
+          <option>Salon Owner</option>
+          <option>Stylist</option>
+          <option>Client</option>
+          <option>Investor</option>
+          <option>Engineer</option>
+          <option>Press</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="wl-company">Company or salon <span class="opt">(optional)</span></label>
+        <input id="wl-company" name="company" type="text" autocomplete="organization" />
+      </div>
+      <div class="field">
+        <label for="wl-note">Brief note <span class="opt">(optional, 280 max)</span></label>
+        <textarea id="wl-note" name="note" rows="3" maxlength="280"></textarea>
+      </div>
+
+      <!-- Honeypot. Real users never see or fill this; a filled value is rejected. -->
+      <div class="hp" aria-hidden="true">
+        <label for="wl-website">Website</label>
+        <input id="wl-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button type="submit" class="cta">
+        Join the waitlist
+        <span class="arrow">&rarr;</span>
+      </button>
+      <p class="form-msg" id="wl-msg" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="form-alt">
+      or write directly &mdash;
+      <a href="mailto:ej@hairchairos.com?subject=hairchair%2FOS%20%E2%80%94%20intro">ej@hairchairos.com</a>
+    </p>
   </div>
 </section>
 
@@ -1242,6 +1365,120 @@ footer {
     </p>
   </div>
 </footer>
+
+<!-- ============================================================
+     WAITLIST SUBMISSION (vanilla JS, no dependencies)
+
+     Supabase table this posts to — run once in the Supabase SQL editor:
+
+       create table public.waitlist_signups (
+         id          uuid primary key default gen_random_uuid(),
+         created_at  timestamptz not null default now(),
+         email       text not null,
+         role        text not null,
+         company     text,
+         note        text
+       );
+
+       alter table public.waitlist_signups enable row level security;
+
+       create policy "anon can insert waitlist signups"
+         on public.waitlist_signups
+         for insert
+         to anon
+         with check (true);
+       -- No SELECT / UPDATE / DELETE policy => anon can only INSERT.
+
+     The anon key below is a publishable, RLS-protected key — safe client-side.
+     ============================================================ -->
+<script>
+(function () {
+  "use strict";
+
+  // --- Config. Public, RLS-protected publishable key; safe to expose client-side. ---
+  var SUPABASE_URL      = "https://evzjtrvoarkifopztztc.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_wWBLa_mDqPuEFsNr9gIRGg_JpQXJX-g";
+  var ENDPOINT   = SUPABASE_URL + "/rest/v1/waitlist_signups";
+  var RATE_MS    = 30000;                 // 30s friction between submissions
+  var RATE_KEY   = "hc_waitlist_last";    // localStorage key for last submit time
+
+  var form = document.getElementById("waitlist-form");
+  if (!form) return;                      // form not on page; nothing to wire
+  var msg = document.getElementById("wl-msg");
+
+  // Update the inline status line with an optional state class.
+  function setMsg(text, kind) {
+    msg.textContent = text;
+    msg.className = "form-msg" + (kind ? " " + kind : "");
+  }
+
+  // Swap the form out for a thank-you note, in place. No redirect, no popup.
+  function showThanks() {
+    var p = document.createElement("p");
+    p.className = "thanks";
+    p.textContent = "Thank you. We'll be in touch.";
+    form.replaceWith(p);
+  }
+
+  // addEventListener (not an inline handler) keeps this CSP-friendly.
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    // 1. Honeypot: bots fill the off-screen "website" field. Reject before any
+    //    network call, and show the normal thank-you so the trap isn't revealed.
+    if (form.website && form.website.value.trim() !== "") {
+      showThanks();
+      return;
+    }
+
+    // 2. Per-browser rate limit. Friction, not security.
+    var last = Number(localStorage.getItem(RATE_KEY) || 0);
+    if (Date.now() - last < RATE_MS) {
+      setMsg("Please wait a moment before submitting again.", "error");
+      return;
+    }
+
+    // 3. Native constraint validation (email pattern + required role).
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    // Only the four allowed columns. No IP, no user agent, no extra PII.
+    var payload = {
+      email:   form.email.value.trim(),
+      role:    form.role.value,
+      company: form.company.value.trim() || null,
+      note:    form.note.value.trim() || null
+    };
+
+    var btn = form.querySelector("button[type=submit]");
+    if (btn) btn.disabled = true;
+    setMsg("Sending…", "");
+
+    // Prefer: return=minimal => 201 with no body, so no SELECT policy is needed.
+    fetch(ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        if (!res.ok) { throw new Error("HTTP " + res.status); }
+        localStorage.setItem(RATE_KEY, String(Date.now()));
+        showThanks();
+      })
+      .catch(function () {
+        if (btn) btn.disabled = false;
+        setMsg("Something went wrong. Please email ej@hairchairos.com directly.", "error");
+      });
+  });
+})();
+</script>
 
 </body>
 </html>
