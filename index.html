@@ -757,6 +757,20 @@ h2.section-title em {
   line-height: 1.5;
 }
 
+/* Discreet pitch-deck link below the recognition cards */
+.deck-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--copper);
+  transition: gap 0.3s ease, color 0.3s ease;
+}
+.deck-link:hover { color: var(--copper-glow); gap: 0.8rem; }
+
 /* ==========================================================
    CONTACT
    ========================================================== */
@@ -1318,6 +1332,11 @@ footer {
         <div class="recog-detail">Sole inventor. Currently in examination queue with a planned continuation-in-part for chair-product refinements.</div>
       </div>
     </div>
+
+    <!-- TODO: Replace with DocSend embed once founder configures DocSend account for view analytics. -->
+    <a class="deck-link" href="/assets/hairchair_pitch_deck.pdf" target="_blank" rel="noopener noreferrer">
+      View pitch deck <span aria-hidden="true">&rarr;</span>
+    </a>
   </div>
 </section>
 
@@ -1390,7 +1409,7 @@ footer {
     <div class="footer-row">
       <div>&copy; 2026 HairChair. All rights reserved.</div>
       <div>
-        <a href="mailto:founder@hairchairos.com">contact</a> &nbsp;·&nbsp;
+        <a href="mailto:ej@hairchairos.com">contact</a> &nbsp;·&nbsp;
         <a href="#build">build log</a> &nbsp;·&nbsp;
         <a href="https://www.linkedin.com/in/eva-jessy-guech" target="_blank" rel="noopener">linkedin</a>
       </div>

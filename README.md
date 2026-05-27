@@ -107,7 +107,7 @@ If you're between phases or on break, you can also remove the block entirely. It
 
 ## 3. Swapping the contact email
 
-The site uses `founder@hairchairos.com` in two places: the CTA button and the footer link. If you set up your Zoho inbox under a different handle (e.g. `ej@hairchairos.com`), find-and-replace those two strings in `index.html`. There are no other places the address appears.
+The site uses `ej@hairchairos.com` in two places: the waitlist form's "or write directly" fallback and the footer link. If you set up your inbox under a different handle, find-and-replace those two strings in `index.html`. There are no other places the address appears.
 
 ---
 
