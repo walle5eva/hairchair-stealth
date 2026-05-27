@@ -238,6 +238,27 @@ section { padding: clamp(4rem, 9vw, 7rem) 0; }
   text-transform: uppercase;
 }
 
+/* Hero image pair — two chair renders directly under the wordmark/tagline.
+   Stacks on mobile, sits side-by-side from 768px up, capped at 960px wide. */
+.hero-images {
+  display: grid;
+  grid-template-columns: 1fr;   /* mobile: single column, images stack */
+  gap: 16px;                    /* 16px gap per spec, both axes */
+  max-width: 960px;             /* combined width ceiling on desktop */
+  margin: 2.75rem auto 0;       /* centered under the hero text */
+}
+@media (min-width: 768px) {
+  /* desktop: two equal columns side-by-side */
+  .hero-images { grid-template-columns: 1fr 1fr; }
+}
+.hero-images img {
+  width: 100%;
+  border: 1px solid var(--ink-rule);          /* hairline edge matches cards */
+  border-radius: 4px;
+  background: var(--ink-raised);              /* dark backing while decoding */
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);  /* subtle lift on the dark theme */
+}
+
 /* Decorative hairline rule under hero */
 .hairline {
   height: 1px;
@@ -798,6 +819,18 @@ footer {
       It is an <em>intelligent ecosystem.</em>
     </p>
     <div class="hero-attrib reveal r4">— Eva-Jessy Guech, Founder &amp; Systems Architect</div>
+
+    <!-- Hero image pair. Above the fold, so NO loading="lazy" — these should
+         decode immediately. Alt text is descriptive per spec. -->
+    <div class="hero-images reveal r5">
+      <img
+        src="assets/chair_hero.png"
+        alt="HairChair workstation render — front three-quarter view showing chassis, embedded 7-DOF cobotic arm, and omnidirectional drive." />
+      <img
+        src="assets/chair_hero1.png"
+        alt="HairChair workstation render — alternate angle showing arm articulation envelope and gear-ramp mounting interface." />
+    </div>
+
     <div class="hairline reveal r5"></div>
   </div>
 </section>
