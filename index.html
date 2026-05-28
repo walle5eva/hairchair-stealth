@@ -248,8 +248,14 @@ section { padding: clamp(4rem, 9vw, 7rem) 0; }
   margin: 2.75rem auto 0;       /* centered under the hero text */
 }
 @media (min-width: 768px) {
-  /* desktop: two equal columns side-by-side */
-  .hero-images { grid-template-columns: 1fr 1fr; }
+  /* Left image (OS role-select) is wide (~2.33:1); right image (chair render)
+     is near-square (~0.92:1). Weight columns ~2.5:1 so the OS screenshot gets
+     the width it needs and both render at nearly equal height, each fully
+     visible without cropping. */
+  .hero-images {
+    grid-template-columns: 2.5fr 1fr;
+    align-items: center;
+  }
 }
 .hero-images img {
   width: 100%;
@@ -994,12 +1000,13 @@ footer {
     </p>
     <div class="hero-attrib reveal r4">— Eva-Jessy Guech, Founder &amp; Systems Architect</div>
 
-    <!-- Hero image pair. Above the fold, so NO loading="lazy" — these should
-         decode immediately. Alt text is descriptive per spec. -->
+    <!-- Hero image pair: software (OS) on the left, hardware (chair) on the right.
+         Above the fold, so NO loading="lazy" — these should decode immediately.
+         Alt text is descriptive per spec. -->
     <div class="hero-images reveal r5">
       <img
-        src="assets/chair_hero.png"
-        alt="HairChair workstation render — front three-quarter view showing chassis, embedded 7-DOF cobotic arm, and omnidirectional drive." />
+        src="assets/os_role_select.png"
+        alt="HairChair OS role-select screen — the five-role software platform: Clinical AI, Client, Stylist, Salon Owner, and Dev/Admin." />
       <img
         src="assets/chair_hero1.png"
         alt="HairChair workstation render — alternate angle showing arm articulation envelope and gear-ramp mounting interface." />
